@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random TCG Cards Generator</title>
+    <link rel="stylesheet" href="style.css">
+	<!-- Include Google Font for Headers -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Подключаем Font Awesome через Kit -->
+  <script src="https://kit.fontawesome.com/e35d70de91.js" crossorigin="anonymous"></script>
+	<style>
+	body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+	background-image: url('https://i.ibb.co/St2BqCV/background.png');
+      background-size: cover; /* Ensures the image covers the whole page */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
+      background-attachment: fixed; /* Keeps the background fixed in place when scrolling */
+      background-position: center; /* Centers the image */
+}
+
+  h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 3em;
+    }
+
+    h2,h3 {
+      font-family: 'Cinzel', serif;
+      margin-top: 20px;
+    }
+	
+.controls {
+    flex-grow: 1;
+    margin-right: 20px;
+}
+.slider-container {
+    margin-bottom: 20px;
+}
+.slider-label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+input[type="range"] {
+    width: 100%;
+}
+.filters {
+    display: none; /* Изначально скрыты */
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+.filter-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom:10px;
+    height: 40px;
+}
+.filter {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    background-color: white;
+    color: black;
+}
+.filter-type.active {
+    background-color: black;
+    color: white;
+}
+.filter-rarity.active-common {
+    background-color: #7b7b7b;
+    color: white;
+}
+.filter-rarity.active-rare {
+    background-color: #1e90ff;
+    color: white;
+}
+.filter-rarity.active-epic {
+    background-color: #9400d3;
+    color: white;
+}
+.filter-rarity.active-legendary {
+    background-color: #ff8c00;
+    color: white;
+}
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+}
+
+/* Стиль для карточек */
+.card {
+    width: 250px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+    .card-image {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      background-color: #f5f5f5;
+    }
+
+    .icon-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 10px;
+    }
+
+    .icon-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+    }
+
+    .corner-icon {
+      position: absolute;
+      font-size: 30px;
+    }
+
+    .top-left { top: 10px; left: 10px; }
+    .top-right { top: 10px; right: 10px; }
+    .bottom-left { bottom: 10px; left: 10px; }
+    .bottom-right { bottom: 10px; right: 10px; }
+
+.card-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #ffcc00;
+    color: #333;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.card-type {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin: 5px 0;
+    padding: 5px;
+}
+
+.card-description {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.card-footer {
+    padding: 10px;
+    background-color: #f0f0f0;
+    text-align: right; /* Выравниваем по правому краю */
+    font-size: 10px; /* Уменьшаем размер шрифта */
+    color: #888;
+    border-top: 2px solid #e5e5e5;
+}
+
+/* Позиция редкости карты в нижнем левом углу */
+.rarity {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+/* Цвет фона редкости */
+.rarity-common {
+    background-color: #7b7b7b;
+}
+.rarity-rare {
+    background-color: #1e90ff;
+}
+.rarity-epic {
+    background-color: #9400d3;
+}
+.rarity-legendary {
+    background-color: #ff8c00;
+}
+
+	</style>
+</head>
+<body>
+
+<div class="controls">
+    <h1>Card Set Generator</h1>
+
+    <!-- Слайдеры для генерации параметров -->
+    <div class="slider-container">
+        <label for="colorPalette" class="slider-label">Color Palette (Bright to Dark):</label>
+        <input type="range" id="colorPalette" name="colorPalette" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+        <label for="realism" class="slider-label">Realism vs Cartoony:</label>
+        <input type="range" id="realism" name="realism" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+        <label for="technologyNature" class="slider-label">Technology vs Nature:</label>
+        <input type="range" id="technologyNature" name="technologyNature" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+        <label for="mythology" class="slider-label">Mythological vs Modern:</label>
+        <input type="range" id="mythology" name="mythology" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+        <label for="architecture" class="slider-label">Architectural Style (Medieval to Futuristic):</label>
+        <input type="range" id="architecture" name="architecture" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+        <label for="epicness" class="slider-label">Epicness of Events:</label>
+        <input type="range" id="epicness" name="epicness" min="0" max="100" value="50">
+    </div>
+
+    <button onclick="generateSet()">Generate Card Set</button> <!-- Кнопка генерации -->
+
+    <!-- Список карт -->
+    <div class="result">
+        <h3>Generated Cards:</h3>
+          <!-- Фильтры -->
+    <div class="filters" id="filters" style="display: none;"> <!-- Изначально скрыты -->
+        <div class="filter-container">
+            <h3>Filters:</h3>
+            <div class="filter filter-type" onclick="filterCards('all')">All Types</div>
+            <div class="filter filter-type" onclick="filterCards('creature')">Creatures</div>
+            <div class="filter filter-type" onclick="filterCards('spell')">Spells</div>
+            <div class="filter filter-type" onclick="filterCards('event')">Events</div>
+            <div class="filter filter-type" onclick="filterCards('item')">Items</div>
+            <div class="filter filter-rarity" onclick="filterRarity('all')">All Rarities</div>
+            <div class="filter filter-rarity" onclick="filterRarity('common')">Common</div>
+            <div class="filter filter-rarity" onclick="filterRarity('rare')">Rare</div>
+            <div class="filter filter-rarity" onclick="filterRarity('epic')">Epic</div>
+            <div class="filter filter-rarity" onclick="filterRarity('legendary')">Legendary</div>
+        </div>
+    </div>
+        <div class="card-list" id="cardList"></div>
+    </div>
+</div>
+
+<script>
+// Привязка иконок к пространствам имен
+const colorPaletteIconMap = {
+    bright: 'fa-sun',
+    dark: 'fa-moon'
+};
+
+// Маппинг цветов к словам
+const colorMapping = {
+    "Radiant": "#FFD700",   // Золотой
+    "Gleaming": "#FFFACD",  // Светло-желтый
+    "Shimmering": "#FFFAF0", // Фантомный белый
+    "Vivid": "#00FF00",     // Ярко-зеленый
+    "Luminous": "#87CEFA",  // Светло-голубой
+    "Dazzling": "#1E90FF",  // Синий
+    "Glowing": "#FF69B4",   // Розовый
+    "Bright": "#FFD700",    // Желтый
+    "Shadowed": "#2F4F4F",  // Темно-серый
+    "Obsidian": "#0B0B0B",  // Черный
+    "Gloomy": "#696969",    // Темный серый
+    "Mysterious": "#483D8B", // Темный синий
+    "Dusky": "#8B4513",     // Темно-коричневый
+    "Somber": "#A9A9A9",    // Тускло-серый
+    "Murky": "#708090",     // Серо-синий
+    "Dark": "#000000"       // Черный
+};
+
+const realismIconMap = {
+    cartoony: 'fa-smile',
+    realistic: 'fa-eye'
+};
+
+const techNatureIconMap = {
+    tech: 'fa-cogs',
+    nature: 'fa-leaf'
+};
+
+const mythologyIconMap = {
+    mythological: 'fa-gem',
+    modern: 'fa-building'
+};
+
+const architectureIconMap = {
+    medieval: 'fa-fort-awesome',
+    futuristic: 'fa-rocket'
+};
+
+const epicnessIconMap = {
+    low: 'fa-seedling',
+    high: 'fa-mountain'
+};
+
+// Привязка типов карт к угловым иконкам
+const cornerIconMap = {
+    creature: 'fa-paw',
+    spell: 'fa-bolt',
+    event: 'fa-flag',
+    item: 'fa-gem'
+};
+
+// Привязка названий карт к центральным иконкам
+const iconMap = {
+    Dragon: 'fa-dragon',
+    Warrior: 'fa-fist-raised',
+    Mage: 'fa-hat-wizard',
+    Spirit: 'fa-ghost',
+    Golem: 'fa-robot',
+    Elemental: 'fa-fire',
+    Phoenix: 'fa-brands fa-phoenix-framework',
+    Beast: 'fa-paw',
+    Sword: 'fa-trowel',
+    Amulet: 'fa-ankh',
+    Tome: 'fa-book',
+    Orb: 'fa-bullseye',
+    Staff: 'fa-magic',
+    Ring: 'fa-ring',
+    Blade: 'fa-wrench',
+    Lantern: 'fa-hanukiah',
+    Blast: 'fa-explosion',
+    Shield: 'fa-shield-cat',
+    Curse: 'fa-skull',
+    Blessing: 'fa-pray',
+    Hex: 'fa-frog',
+    Incantation: 'fa-book-skull',
+    Ritual: 'fa-scroll',
+    Charm: 'fa-heart',
+    Battle: 'fa-fist-raised',
+    Feast: 'fa-utensils',
+    Riot: 'fa-angry',
+    Discovery: 'fa-search',
+    Conquest: 'fa-crown',
+    Celebration: 'fa-people-robbery',
+    Invasion: 'fa-people-group',
+    Siege: 'fa-building-shield'
+};
+
+// Цвета для фонов на основе редкости
+const rarityColors = {
+    common: '#f5f5f5',
+    rare: '#1e90ff',
+    epic: '#9400d3',
+    legendary: '#ff8c00'
+};
+
+// Функция для создания изображения карты
+function generateCardImage(cardElement, cardName, cardType, cardRarity, color, realism, techNature, mythology, architecture, epicness) {
+    // Получаем центральную иконку на основе названия карты
+    const cardNameParts = cardName.split(' '); // Разделяем имя на части
+    const lastWord = cardNameParts[cardNameParts.length - 1]; // Получаем последнее слово
+    const icon = iconMap[lastWord] || 'fa-question';
+
+    // Цвет фона на основе параметра color
+    const backgroundColor = colorMapping[color] || '#f5f5f5';  // Используем маппинг для цвета
+
+    // Создание HTML структуры изображения
+    const cardImage = document.createElement('div');
+    cardImage.classList.add('card-image');
+    cardImage.style.backgroundColor = backgroundColor;
+
+    // Маска с маленькими иконками
+    const mask = document.createElement('div');
+    mask.classList.add('icon-mask');
+    const iconsPerRow = 10;
+    const iconsPerCol = 7;
+
+    // Создание сетки иконок для маски
+    for (let row = 0; row < iconsPerCol; row++) {
+        for (let col = 0; col < iconsPerRow; col++) {
+            const smallIcon = document.createElement('i');
+            smallIcon.classList.add('fas', 'fa-circle'); // Маленькие иконки
+            smallIcon.style.margin = '5px';
+            smallIcon.style.opacity = '0.2';
+            mask.appendChild(smallIcon);
+        }
+    }
+
+    // Центральная иконка
+    const centralIcon = document.createElement('div');
+    centralIcon.classList.add('icon-overlay');
+    centralIcon.innerHTML = `<i class="fas ${icon}" style="text-shadow: 2px 2px 5px #FFFFFF;"></i>`; // Центральная иконка
+
+    // Угловые иконки на основе типа карты
+    const cornerIconClass = cornerIconMap[cardType] || 'fa-leaf'; 
+    const cornerPositions = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+    cornerPositions.forEach(position => {
+        const cornerIcon = document.createElement('div');
+        cornerIcon.classList.add('corner-icon', position);
+        cornerIcon.innerHTML = `<i class="fas ${cornerIconClass}"  style="-webkit-text-stroke: 1px #fff; text-stroke: 1px #fff;"></i>`;
+        cardImage.appendChild(cornerIcon);
+    });
+
+    // Добавляем маску и центральную иконку на изображение карты
+    cardImage.appendChild(mask);
+    cardImage.appendChild(centralIcon);
+
+    // Добавляем изображение на карту
+    cardElement.prepend(cardImage);
+}
+
+// Карточные данные и настройки
+const colorPaletteWords = {
+    bright: ["Radiant", "Gleaming", "Shimmering", "Vivid", "Luminous", "Dazzling", "Glowing", "Bright"],
+    dark: ["Shadowed", "Obsidian", "Gloomy", "Mysterious", "Dusky", "Somber", "Murky", "Dark"]
+};
+
+const realismWords = {
+    cartoony: ["Whimsical", "Playful", "Charming", "Cartoony", "Animated", "Lively", "Colorful"],
+    realistic: ["Grim", "Detailed", "Vivid", "Authentic", "Gritty", "Photorealistic", "Lifelike"]
+};
+
+const techNatureWords = {
+    tech: ["Mechanized", "Cyber", "Automated", "Robotic", "Digital", "Synthetic", "Engineered", "Industrial"],
+    nature: ["Forest", "Wild", "Earthborn", "Natural", "Organic", "Floral", "Woodland", "Rustic"]
+};
+
+const mythologyWords = {
+    mythological: ["Legendary", "Mythic", "Divine", "Arcane", "Ancient", "Mystical", "Fabled", "Enchanted"],
+    modern: ["Contemporary", "Futuristic", "Urban", "Digital", "Postmodern", "Modern", "Cyber", "Technological"]
+};
+
+const architectureWords = {
+    medieval: ["Castle", "Fortress", "Tower", "Cathedral", "Palace", "Stronghold", "Bastion"],
+    futuristic: ["Skyscraper", "Habitat", "Station", "Complex", "Arcology", "Dome", "Colony"]
+};
+
+const epicnessWords = {
+    low: ["Minor", "Simple", "Small-scale", "Local", "Personal", "Subtle", "Modest"],
+    high: ["Epic", "Legendary", "Massive", "World-changing", "Colossal", "Grand", "Heroic"]
+};
+
+// Шаблоны описаний для различных типов карт
+const descriptionTemplates = {
+    creature: [
+        "This mighty {type} roams the {location}, feared by all who cross its path.",
+        "{type} from the {location}, known for its {specialTrait} and {ability}.",
+        "A legendary {type}, capable of {power}, feared for its {specialTrait}."
+    ],
+    spell: [
+        "This spell harnesses the power of {element}, casting {effect} upon enemies.",
+        "Ancient {element} magic, used to {effect}, bringing {consequence} to the battlefield.",
+        "A {element} spell that {effect}, known for its {specialTrait}."
+    ],
+    item: [
+        "This enchanted {type} grants the bearer {specialTrait} and is known for its {power}.",
+        "Forged in the depths of {location}, this {type} provides {power} to its wielder.",
+        "A rare {type} from the {location}, known for its ability to {specialTrait}."
+    ],
+    event: [
+        "The {event} is remembered for {specialTrait}, affecting the entire {location}.",
+        "During the {event}, {specialTrait} caused a great shift in the {location}.",
+        "This historical event shaped the {location}, remembered for {specialTrait} and {outcome}."
+    ]
+};
+
+// Данные для случайных элементов
+const locations = ["Mountains", "Forest", "Desert", "Plains", "Oceans"];
+const specialTraits = ["unmatched strength", "blinding speed", "ancient wisdom", "eternal rage"];
+const abilities = ["flying", "breathing fire", "healing wounds", "summoning allies"];
+const elements = ["Fire", "Ice", "Lightning", "Wind", "Earth"];
+const effects = ["devastating damage", "protection", "confusion", "paralysis", "healing"];
+const consequences = ["utter destruction", "total chaos", "ultimate peace", "endless power"];
+const powers = ["Strength", "Agility", "Wisdom", "Invincibility"];
+const outcomes = ["Victory", "Defeat", "Chaos", "Renewal"];
+const events = ["Battle", "Feast", "Riot", "Discovery", "Conquest", "Celebration", "Invasion", "Siege"];
+
+// Функция для выбора случайного элемента
+function getRandomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+// Функция для генерации описания карты на основе шаблонов
+function generateDescription(type) {
+    const template = getRandomElement(descriptionTemplates[type]);
+    return template
+        .replace("{type}", capitalize(type))
+        .replace("{location}", getRandomElement(locations))
+        .replace("{specialTrait}", getRandomElement(specialTraits))
+        .replace("{ability}", getRandomElement(abilities))
+        .replace("{element}", getRandomElement(elements))
+        .replace("{effect}", getRandomElement(effects))
+        .replace("{event}", getRandomElement(events))
+        .replace("{consequence}", getRandomElement(consequences))
+        .replace("{power}", getRandomElement(powers))
+        .replace("{outcome}", getRandomElement(outcomes));
+}
+
+// Функция для генерации описания с учётом редкости карты
+function generateRarityDescription(type, rarity) {
+    let description = generateDescription(type);
+    if (rarity === "legendary") {
+        description += " Legends say that only a chosen few can wield this power.";
+    } else if (rarity === "epic") {
+        description += " Those who possess it are known to change the course of battles.";
+    } else if (rarity === "rare") {
+        description += " This rare item is coveted by many.";
+    } else if (rarity === "common") {
+        description += " A common but reliable part of any collection.";
+    }
+    return description;
+}
+
+// Массивы типов карт
+const cardTypes = {
+    creature: ["Beast", "Warrior", "Mage", "Spirit", "Golem", "Elemental", "Dragon", "Phoenix"],
+    spell: ["Blast", "Curse", "Shield", "Blessing", "Hex", "Incantation", "Ritual", "Charm"],
+    event: ["Battle", "Feast", "Riot", "Discovery", "Conquest", "Celebration", "Invasion", "Siege"],
+    item: ["Sword", "Amulet", "Tome", "Orb", "Staff", "Ring", "Blade", "Lantern"]
+};
+
+// Редкость карточек и распределение
+const rarityDistribution = {
+    common: 0.6,
+    rare: 0.25,
+    epic: 0.1,
+    legendary: 0.05
+};
+
+// Переменные для фильтров и карт
+let allCards = [];
+let currentTypeFilter = 'all';
+let currentRarityFilter = 'all';
+
+// Функция для выбора типа карточки
+function chooseCardType() {
+    const types = Object.keys(cardTypes);
+    return getRandomElement(types);
+}
+
+// Функция для выбора редкости карточки
+function chooseRarity() {
+    const randomValue = Math.random();
+    if (randomValue < rarityDistribution.common) {
+        return 'common';
+    } else if (randomValue < rarityDistribution.common + rarityDistribution.rare) {
+        return 'rare';
+    } else if (randomValue < rarityDistribution.common + rarityDistribution.rare + rarityDistribution.epic) {
+        return 'epic';
+    } else {
+        return 'legendary';
+    }
+}
+
+// Генерация карточки
+function generateCardWithSliders(colorSlider, realismSlider, techNatureSlider, mythologySlider, architectureSlider, epicnessSlider) {
+    const type = chooseCardType();
+    const rarity = chooseRarity();
+    let name = "";
+
+    let color = (Math.random() * 100 < colorSlider) ? getRandomElement(colorPaletteWords.bright) : getRandomElement(colorPaletteWords.dark);
+    let realism = (Math.random() * 100 < realismSlider) ? getRandomElement(realismWords.realistic) : getRandomElement(realismWords.cartoony);
+    let techNature = (Math.random() * 100 < techNatureSlider) ? getRandomElement(techNatureWords.nature) : getRandomElement(techNatureWords.tech);
+    let mythology = (Math.random() * 100 < mythologySlider) ? getRandomElement(mythologyWords.mythological) : getRandomElement(mythologyWords.modern);
+    let architecture = (Math.random() * 100 < architectureSlider) ? getRandomElement(architectureWords.medieval) : getRandomElement(architectureWords.futuristic);
+    let epicness = (Math.random() * 100 < epicnessSlider) ? getRandomElement(epicnessWords.high) : getRandomElement(epicnessWords.low);
+
+    if (type === "creature") {
+        name = `${color} ${techNature} ${mythology} ${getRandomElement(cardTypes[type])}`;
+    } else if (type === "spell") {
+        const element = getRandomElement(elements);
+        name = `${epicness} ${color} ${element} ${getRandomElement(cardTypes[type])}`;
+    } else if (type === "item") {
+        name = `${architecture} ${techNature} ${realism} ${getRandomElement(cardTypes[type])}`;
+    } else if (type === "event") {
+        const location = getRandomElement(locations);
+        name = `${mythology} ${epicness} ${location} ${getRandomElement(cardTypes[type])}`;
+    }
+
+    const description = generateRarityDescription(type, rarity);
+
+    return {
+        name: name,
+        type: type,
+        rarity: rarity,
+        description: description,
+        color: color,
+        realism: realism,
+        techNature: techNature,
+        mythology: mythology,
+        architecture: architecture,
+        epicness: epicness
+    };
+}
+
+// Функция для генерации набора карт с учётом слайдеров
+function generateSet() {
+    const colorSlider = document.getElementById('colorPalette').value;
+    const realismSlider = document.getElementById('realism').value;
+    const techNatureSlider = document.getElementById('technologyNature').value;
+    const mythologySlider = document.getElementById('mythology').value;
+    const architectureSlider = document.getElementById('architecture').value;
+    const epicnessSlider = document.getElementById('epicness').value;
+
+    const cardListElement = document.getElementById("cardList");
+    cardListElement.innerHTML = ''; // Очищаем список перед генерацией
+  
+    // Показать фильтры после первого нажатия на кнопку генерации
+    const filtersElement = document.getElementById("filters");
+    filtersElement.style.display = "flex";
+
+    allCards = [];  // Очищаем массив карт перед новой генерацией
+    
+    for (let i = 0; i < 240; i++) {  
+        let card = generateCardWithSliders(colorSlider, realismSlider, techNatureSlider, mythologySlider, architectureSlider, epicnessSlider);
+        allCards.push(card);
+    }
+
+    displayCards(allCards);  // Отображаем все карты после генерации
+}
+
+// Функция для отображения карточек
+function displayCards(cards) {
+    const cardListElement = document.getElementById("cardList");
+    cardListElement.innerHTML = '';
+
+    // Применение фильтров
+    let filteredCards = cards.filter(card => {
+        return (currentTypeFilter === 'all' || card.type === currentTypeFilter) &&
+               (currentRarityFilter === 'all' || card.rarity === currentRarityFilter);
+    });
+
+    // Вывод карточек на экран
+    filteredCards.forEach(card => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.innerHTML = `
+            <div class="rarity ${'rarity-' + card.rarity}">${capitalize(card.rarity)}</div>
+            <div class="card-title">${card.name}</div>
+            <div class="card-type">${capitalize(card.type)}</div>
+            <div class="card-description">${card.description}</div>
+            <div class="card-footer">© 2024 Stonehill Games</div>
+        `;
+      
+        // Генерируем изображение для карты с учётом типа и параметров
+        generateCardImage(cardElement, card.name, card.type, card.rarity, card.color, card.realism, card.techNature, card.mythology, card.architecture, card.epicness);
+
+        cardListElement.appendChild(cardElement);
+    });
+}
+
+// Функция для фильтрации карт по типу
+function filterCards(type) {
+    currentTypeFilter = type;
+    updateActiveTypeFilter(type);
+    displayCards(allCards);  // Отображаем карты без их перегенерации
+}
+
+// Функция для фильтрации карт по редкости
+function filterRarity(rarity) {
+    currentRarityFilter = rarity;
+    updateActiveRarityFilter(rarity);
+    displayCards(allCards);  // Отображаем карты без их перегенерации
+}
+
+// Обновление активной кнопки фильтра типа
+function updateActiveTypeFilter(type) {
+    const allButtons = document.querySelectorAll('.filter-type');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+
+    const activeButton = document.querySelector(`.filter-type[onclick="filterCards('${type}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+}
+
+// Обновление активной кнопки фильтра редкости
+function updateActiveRarityFilter(rarity) {
+    const allButtons = document.querySelectorAll('.filter-rarity');
+    allButtons.forEach(btn => btn.classList.remove('active-common', 'active-rare', 'active-epic', 'active-legendary'));
+
+    const activeButton = document.querySelector(`.filter-rarity[onclick="filterRarity('${rarity}')"]`);
+    if (activeButton) {
+        activeButton.classList.add(`active-${rarity}`);
+    }
+}
+
+// Вспомогательная функция для капитализации текста
+function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+</script>
+</body>
+</html>
