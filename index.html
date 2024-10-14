@@ -10,20 +10,18 @@
   <!-- Подключаем Font Awesome через Kit -->
   <script src="https://kit.fontawesome.com/e35d70de91.js" crossorigin="anonymous"></script>
 	<style>
-	body {
+body {
     font-family: Arial, sans-serif;
-    max-width: 800px;
+    max-width: 890px;
     margin: 20px auto;
-    display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-	background-image: url('https://i.ibb.co/St2BqCV/background.png');
+  background-image: url('https://i.ibb.co/St2BqCV/background.png');
       background-size: cover; /* Ensures the image covers the whole page */
       background-repeat: no-repeat; /* Prevents the image from repeating */
       background-attachment: fixed; /* Keeps the background fixed in place when scrolling */
       background-position: center; /* Centers the image */
 }
-
   h1 {
       font-family: 'Cinzel', serif;
       font-size: 3em;
@@ -31,13 +29,26 @@
 
     h2,h3 {
       font-family: 'Cinzel', serif;
-      margin-top: 20px;
+      margin-top: 7px;
     }
-	
 .controls {
     flex-grow: 1;
     margin-right: 20px;
+    background-color: #fff8e1;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.generator-container {
+    flex-grow: 1;
+    margin-right: 20px;
+  margin-top:20px;
+    background-color: #fff8e1;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .slider-container {
     margin-bottom: 20px;
 }
@@ -57,7 +68,7 @@ input[type="range"] {
 }
 .filter-container {
     display: flex;
-    gap: 10px;
+    gap: 6px;
     margin-bottom:10px;
     height: 40px;
 }
@@ -74,6 +85,10 @@ input[type="range"] {
     background-color: black;
     color: white;
 }
+.filter-rarity.active-all{
+    background-color: black;
+    color: white;
+	}
 .filter-rarity.active-common {
     background-color: #7b7b7b;
     color: white;
@@ -92,9 +107,12 @@ input[type="range"] {
 }
 .card-list {
     display: flex;
+    max-width: 800px;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: space-around;
+    margin-left: 25px;
+    margin-top: 10px;
 }
 
 /* Стиль для карточек */
@@ -208,6 +226,66 @@ input[type="range"] {
     background-color: #ff8c00;
 }
 
+
+/* Общие стили для тултипов */
+.tooltip {
+    display: none; /* Изначально скрыты */
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    transform: translate(50px, -65px); /* Поднимаем тултип над слайдером */
+}
+
+.slider-container {
+    position: relative; /* Для позиционирования тултипа */
+}
+
+.slider:hover + .tooltip, .slider:active + .tooltip {
+    display: block; /* Показать тултип, когда на слайдере есть взаимодействие */
+}
+
+#cardCount {
+    width: 60px;
+    height: 24px;
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.generate-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.generate-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Контейнер для двух столбцов слайдеров */
+.sliders-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Настройте в зависимости от ширины родительского блока */
+}
+
+/* Колонки для слайдеров */
+.slider-column {
+    display: flex;
+    flex-direction: column;
+    width: 33%; /* Половина ширины контейнера для каждого столбца */
+}
+
 	</style>
 </head>
 <body>
@@ -216,51 +294,74 @@ input[type="range"] {
     <h1>Card Set Generator</h1>
 
     <!-- Слайдеры для генерации параметров -->
-    <div class="slider-container">
-        <label for="colorPalette" class="slider-label">Color Palette (Bright to Dark):</label>
-        <input type="range" id="colorPalette" name="colorPalette" min="0" max="100" value="50">
+<div class="sliders-container">
+    <div class="slider-column">  
+  
+<div class="slider-container">
+    <label for="colorPalette" class="slider-label">Dark vs Bright:</label>
+    <input type="range" id="colorPalette" name="colorPalette" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="colorPaletteTooltip">50% Dark, 50% Bright</div>
+</div>
+
+<div class="slider-container">
+    <label for="realism" class="slider-label">Cartoony vs Realism:</label>
+    <input type="range" id="realism" name="realism" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="realismTooltip">50% Realistic, 50% Cartoony</div>
+</div>
     </div>
 
-    <div class="slider-container">
-        <label for="realism" class="slider-label">Realism vs Cartoony:</label>
-        <input type="range" id="realism" name="realism" min="0" max="100" value="50">
-    </div>
+    <div class="slider-column">  
+      
+<div class="slider-container">
+    <label for="technologyNature" class="slider-label">Technology vs Nature:</label>
+    <input type="range" id="technologyNature" name="technologyNature" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="technologyNatureTooltip">50% Technology, 50% Nature</div>
+</div>
+      
+<div class="slider-container">
+    <label for="mythology" class="slider-label">Mythological vs Modern:</label>
+    <input type="range" id="mythology" name="mythology" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="mythologyTooltip">50% Mythological, 50% Modern</div>
+</div>
+          </div>
 
-    <div class="slider-container">
-        <label for="technologyNature" class="slider-label">Technology vs Nature:</label>
-        <input type="range" id="technologyNature" name="technologyNature" min="0" max="100" value="50">
-    </div>
+    <div class="slider-column">  
 
-    <div class="slider-container">
-        <label for="mythology" class="slider-label">Mythological vs Modern:</label>
-        <input type="range" id="mythology" name="mythology" min="0" max="100" value="50">
-    </div>
+<div class="slider-container">
+    <label for="architecture" class="slider-label">Medieval vs Futuristic:</label>
+    <input type="range" id="architecture" name="architecture" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="architectureTooltip">50% Medieval, 50% Futuristic</div>
+</div>
 
-    <div class="slider-container">
-        <label for="architecture" class="slider-label">Architectural Style (Medieval to Futuristic):</label>
-        <input type="range" id="architecture" name="architecture" min="0" max="100" value="50">
-    </div>
+<div class="slider-container">
+    <label for="epicness" class="slider-label">Epicness of Events:</label>
+    <input type="range" id="epicness" name="epicness" min="0" max="100" value="50" class="slider">
+    <div class="tooltip" id="epicnessTooltip">50% Low Epicness, 50% High Epicness</div>
+</div>
+       </div>
+   </div>
 
-    <div class="slider-container">
-        <label for="epicness" class="slider-label">Epicness of Events:</label>
-        <input type="range" id="epicness" name="epicness" min="0" max="100" value="50">
-    </div>
-
-    <button onclick="generateSet()">Generate Card Set</button> <!-- Кнопка генерации -->
-
+<div>
+    <label for="cardCount">Number of Cards (1-300):</label>
+    <input type="number" id="cardCount" name="cardCount" value="240" min="1" max="300">
+    
+    <button onclick="generateSet()" class="generate-btn">Generate Card Set</button> <!-- Кнопка генерации --></div>
+</div><div class="generator-container">
     <!-- Список карт -->
     <div class="result">
         <h3>Generated Cards:</h3>
           <!-- Фильтры -->
     <div class="filters" id="filters" style="display: none;"> <!-- Изначально скрыты -->
         <div class="filter-container">
-            <h3>Filters:</h3>
-            <div class="filter filter-type" onclick="filterCards('all')">All Types</div>
+            <h3>Type:</h3>
+            <div class="filter filter-type" onclick="filterCards('all')">All</div>
             <div class="filter filter-type" onclick="filterCards('creature')">Creatures</div>
             <div class="filter filter-type" onclick="filterCards('spell')">Spells</div>
             <div class="filter filter-type" onclick="filterCards('event')">Events</div>
             <div class="filter filter-type" onclick="filterCards('item')">Items</div>
-            <div class="filter filter-rarity" onclick="filterRarity('all')">All Rarities</div>
+
+            <h3>Rarity:</h3>
+            <div class="filter filter-rarity" onclick="filterRarity('all')">All</div>
             <div class="filter filter-rarity" onclick="filterRarity('common')">Common</div>
             <div class="filter filter-rarity" onclick="filterRarity('rare')">Rare</div>
             <div class="filter filter-rarity" onclick="filterRarity('epic')">Epic</div>
@@ -616,6 +717,16 @@ function generateCardWithSliders(colorSlider, realismSlider, techNatureSlider, m
 
 // Функция для генерации набора карт с учётом слайдеров
 function generateSet() {
+	const cardCountInput = document.getElementById('cardCount');
+    let cardCount = parseInt(cardCountInput.value, 10);
+
+    // Проверяем, что введенное значение в пределах от 1 до 300
+    if (isNaN(cardCount) || cardCount < 1) {
+        cardCount = 1;
+    } else if (cardCount > 300) {
+        cardCount = 300;
+    }
+	
     const colorSlider = document.getElementById('colorPalette').value;
     const realismSlider = document.getElementById('realism').value;
     const techNatureSlider = document.getElementById('technologyNature').value;
@@ -632,7 +743,7 @@ function generateSet() {
 
     allCards = [];  // Очищаем массив карт перед новой генерацией
     
-    for (let i = 0; i < 240; i++) {  
+    for (let i = 0; i < cardCount; i++) {  
         let card = generateCardWithSliders(colorSlider, realismSlider, techNatureSlider, mythologySlider, architectureSlider, epicnessSlider);
         allCards.push(card);
     }
@@ -698,7 +809,7 @@ function updateActiveTypeFilter(type) {
 // Обновление активной кнопки фильтра редкости
 function updateActiveRarityFilter(rarity) {
     const allButtons = document.querySelectorAll('.filter-rarity');
-    allButtons.forEach(btn => btn.classList.remove('active-common', 'active-rare', 'active-epic', 'active-legendary'));
+    allButtons.forEach(btn => btn.classList.remove('active-all','active-common', 'active-rare', 'active-epic', 'active-legendary'));
 
     const activeButton = document.querySelector(`.filter-rarity[onclick="filterRarity('${rarity}')"]`);
     if (activeButton) {
@@ -710,6 +821,69 @@ function updateActiveRarityFilter(rarity) {
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+// Функция для обновления текста в тултипе
+function updateTooltip(slider, tooltip, minLabel, maxLabel) {
+    const value = slider.value;
+    const minPercentage = 100 - value;
+    const maxPercentage = value;
+    tooltip.textContent = `${minPercentage}% ${minLabel}, ${maxPercentage}% ${maxLabel}`;
+}
+
+// Подключаем все слайдеры и тултипы
+document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('.slider');
+
+    sliders.forEach(slider => {
+        const tooltip = document.getElementById(slider.id + 'Tooltip');
+
+        // Инициализируем начальное значение тултипа
+        switch (slider.id) {
+            case 'colorPalette':
+                updateTooltip(slider, tooltip, 'Bright', 'Dark');
+                break;
+            case 'realism':
+                updateTooltip(slider, tooltip, 'Cartoony', 'Realistic');
+                break;
+            case 'technologyNature':
+                updateTooltip(slider, tooltip, 'Nature', 'Technology');
+                break;
+            case 'mythology':
+                updateTooltip(slider, tooltip, 'Mythological', 'Modern');
+                break;
+            case 'architecture':
+                updateTooltip(slider, tooltip, 'Medieval', 'Futuristic');
+                break;
+            case 'epicness':
+                updateTooltip(slider, tooltip, 'Low Epicness', 'High Epicness');
+                break;
+        }
+
+        // Обновляем тултип при перемещении ползунка
+        slider.addEventListener('input', () => {
+            switch (slider.id) {
+                case 'colorPalette':
+                    updateTooltip(slider, tooltip, 'Dark', 'Bright');
+                    break;
+                case 'realism':
+                    updateTooltip(slider, tooltip, 'Cartoony', 'Realistic');
+                    break;
+                case 'technologyNature':
+                    updateTooltip(slider, tooltip, 'Technology', 'Nature');
+                    break;
+                case 'mythology':
+                    updateTooltip(slider, tooltip, 'Mythological', 'Modern');
+                    break;
+                case 'architecture':
+                    updateTooltip(slider, tooltip, 'Medieval', 'Futuristic');
+                    break;
+                case 'epicness':
+                    updateTooltip(slider, tooltip, 'Low Epicness', 'High Epicness');
+                    break;
+            }
+        });
+    });
+});
 
 </script>
 </body>
